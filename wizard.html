@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Plan Decision Wizard</title>
+  <style>
+    :root {
+      --bg: #eef8fb;
+      --card: #ffffff;
+      --ink: #113948;
+      --ink-soft: #46616c;
+      --blue-700: #0f5f85;
+      --blue-500: #1a85b8;
+      --teal-500: #18a7a0;
+      --teal-300: #6bd4cf;
+      --line: #d1e7ef;
+      --success-bg: #e8f8ee;
+      --success-line: #38a169;
+      --warning-bg: #fff7e7;
+      --warning-line: #e8b24a;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow: 0 10px 25px rgba(20, 75, 97, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      color: var(--ink);
+      font-family: "Avenir Next", "Gill Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(1200px 500px at -10% -20%, #dff4ff 0%, transparent 70%),
+        radial-gradient(800px 400px at 110% -10%, #d9f6f2 0%, transparent 70%),
+        linear-gradient(180deg, #f8fcfe 0%, #eaf5f9 100%);
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, #0d5f85, #17a89f);
+      color: #f8fdff;
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.3rem, 2.5vw, 2rem);
+      line-height: 1.2;
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 70ch;
+      color: #dbf6ff;
+      line-height: 1.45;
+    }
+
+    .progress-wrap {
+      margin-top: 16px;
+    }
+
+    .progress-track {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, #b4f4ff, #89ffd5);
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .progress-labels {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.88rem;
+      color: #d4f5ff;
+    }
+
+    .progress-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.65;
+      transition: opacity 0.2s ease;
+    }
+
+    .progress-label.active {
+      opacity: 1;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      flex-shrink: 0;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-panel {
+      display: none;
+      animation: enter 0.3s ease;
+    }
+
+    .step-panel.active {
+      display: block;
+    }
+
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .step-title {
+      margin: 0;
+      font-size: clamp(1.2rem, 2vw, 1.5rem);
+    }
+
+    .step-subtitle {
+      margin: 7px 0 16px;
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+
+    .income-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal-500);
+      cursor: pointer;
+      height: 26px;
+    }
+
+    .income-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #f8fcff;
+      min-width: 175px;
+    }
+
+    .income-field input {
+      border: none;
+      background: transparent;
+      font-size: 1.05rem;
+      color: var(--ink);
+      width: 100%;
+      outline: none;
+      font-weight: 700;
+    }
+
+    .quick-stats {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .stat-card {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: #f9fdff;
+      padding: 12px;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      margin-top: 4px;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .subsidy-pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .pill-medicaid {
+      background: #ecfdf5;
+      color: #166534;
+      border-color: #86efac;
+    }
+
+    .pill-csr {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #93c5fd;
+    }
+
+    .pill-none {
+      background: #fff7ed;
+      color: #9a3412;
+      border-color: #fdba74;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .choice-card {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      text-align: left;
+      width: 100%;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-2px);
+      border-color: #7ecbdd;
+      box-shadow: 0 10px 22px rgba(30, 96, 122, 0.12);
+    }
+
+    .choice-card.selected {
+      border: 2px solid var(--teal-500);
+      background: #effffc;
+      box-shadow: 0 10px 22px rgba(27, 158, 151, 0.15);
+    }
+
+    .choice-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+    }
+
+    .choice-card p {
+      margin: 0 0 10px;
+      color: var(--ink-soft);
+      line-height: 1.4;
+      font-size: 0.93rem;
+    }
+
+    .mini-list {
+      margin: 0;
+      padding-left: 16px;
+      color: #36515c;
+      font-size: 0.88rem;
+      line-height: 1.35;
+    }
+
+    .timing-meta {
+      margin-top: 10px;
+      display: grid;
+      gap: 6px;
+      font-size: 0.88rem;
+      color: #285364;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      margin-top: 6px;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 10px;
+      border: 1px solid #d8ecf4;
+    }
+
+    .timeline .medicaid {
+      background: #7be6df;
+    }
+
+    .timeline .market {
+      background: #1a8cc5;
+    }
+
+    .results-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .summary-chip {
+      background: #f4fbff;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 10px;
+      font-size: 0.9rem;
+      color: #3b5965;
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+    }
+
+    .plan-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      background: #fff;
+      position: relative;
+    }
+
+    .plan-card.recommended {
+      background: var(--success-bg);
+      border: 2px solid var(--success-line);
+    }
+
+    .recommended-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 0.75rem;
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: #1f9d55;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .plan-name {
+      margin: 0;
+      font-size: 1.06rem;
+      padding-right: 84px;
+    }
+
+    .plan-total {
+      margin: 8px 0 10px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #124f61;
+    }
+
+    .plan-meta {
+      font-size: 0.9rem;
+      color: #2f4f5a;
+      line-height: 1.4;
+      display: grid;
+      gap: 4px;
+    }
+
+    .callout {
+      margin-top: 14px;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border: 1px solid transparent;
+    }
+
+    .callout.success {
+      background: var(--success-bg);
+      border-color: #b2e8c5;
+    }
+
+    .callout.note {
+      background: #f3f8ff;
+      border-color: #bedcf7;
+    }
+
+    .callout.warning {
+      background: var(--warning-bg);
+      border-color: #f4d79f;
+    }
+
+    .checklist {
+      margin-top: 14px;
+      border: 1px solid #d8eaf1;
+      border-radius: var(--radius-md);
+      background: #f9fcff;
+      padding: 14px;
+    }
+
+    .checklist h3 {
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #2b4c58;
+      line-height: 1.35;
+      font-size: 0.92rem;
+    }
+
+    .check-item input {
+      margin-top: 2px;
+      accent-color: var(--teal-500);
+    }
+
+    .step-error {
+      margin-top: 12px;
+      color: #b42318;
+      font-size: 0.9rem;
+      min-height: 1.2em;
+    }
+
+    .wizard-nav {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-size: 0.97rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      color: #285369;
+      border: 1px solid #b8d8e5;
+      background: #f2f9fc;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(120deg, var(--blue-500), var(--teal-500));
+    }
+
+    .disclaimer {
+      margin-top: 12px;
+      font-size: 0.82rem;
+      color: #4a6874;
+      line-height: 1.4;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        padding: 12px;
+      }
+
+      .hero,
+      .panel {
+        padding: 16px;
+      }
+
+      .income-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .income-field {
+        min-width: 0;
+      }
+
+      .progress-labels {
+        font-size: 0.78rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <h1>Health Insurance Decision Wizard</h1>
+      <p>Answer 3 quick questions and get a side-by-side estimate of which plan could cost the least for you in 2026.</p>
+      <div class="progress-wrap" aria-label="Wizard progress">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-labels" id="progressLabels">
+          <div class="progress-label active"><span class="dot"></span>Income</div>
+          <div class="progress-label"><span class="dot"></span>Usage</div>
+          <div class="progress-label"><span class="dot"></span>Filing Date</div>
+          <div class="progress-label"><span class="dot"></span>Results</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="panel" aria-live="polite">
+      <section class="step-panel active" data-step="1">
+        <h2 class="step-title">Step 1: Estimate Your 2026 Income</h2>
+        <p class="step-subtitle">Your income affects monthly help, cost-sharing reductions, and whether you may still qualify for Medicaid.</p>
+
+        <div class="income-wrap">
+          <label for="incomeSlider" class="visually-hidden">Estimated annual income</label>
+          <input id="incomeSlider" type="range" min="15000" max="80000" step="100" value="42000" aria-label="Income slider">
+          <div class="income-field">
+            <span>$</span>
+            <label for="incomeInput" class="visually-hidden">Income dollar amount</label>
+            <input id="incomeInput" type="text" inputmode="numeric" value="42000" aria-label="Income amount">
+          </div>
+        </div>
+
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-label">Federal poverty level</div>
+            <div class="stat-value" id="fplValue">268.4%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Subsidy tier</div>
+            <div class="stat-value"><span id="tierBadge" class="subsidy-pill pill-none">No CSR</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Estimated monthly help</div>
+            <div class="stat-value" id="monthlyHelp">$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Your benchmark share / month</div>
+            <div class="stat-value" id="benchmarkShare">$0</div>
+          </div>
+        </div>
+
+        <div class="callout note" id="incomeNote">
+          We use the 2025 single-person FPL ($15,650), 2026 IRS affordability percentages, and a benchmark premium of about $600/month.
+        </div>
+        <div class="step-error" id="errorStep1"></div>
+      </section>
+
+      <section class="step-panel" data-step="2">
+        <h2 class="step-title">Step 2: Pick Your Usual Healthcare Usage</h2>
+        <p class="step-subtitle">Choose the pattern that feels closest to your year. This helps estimate out-of-pocket costs.</p>
+        <div class="choice-grid" id="usageChoices"></div>
+        <div class="step-error" id="errorStep2"></div>
+      </section>
+
+      <section class="step-panel" data-step="3">
+        <h2 class="step-title">Step 3: When Will You File Your 2025 Taxes?</h2>
+        <p class="step-subtitle">Filing timing affects how long Medicaid might continue and how many months you pay marketplace premiums.</p>
+        <div class="choice-grid" id="filingChoices"></div>
+        <div class="callout warning">Default recommendation: file around April 15 for a balance of savings and simplicity.</div>
+        <div class="step-error" id="errorStep3"></div>
+      </section>
+
+      <section class="step-panel" data-step="4">
+        <h2 class="step-title">Step 4: Your Estimated Plan Comparison</h2>
+        <p class="step-subtitle">These are estimates to help with decision-making before you confirm exact rates in Connect for Health Colorado.</p>
+
+        <div class="results-summary" id="resultsSummary"></div>
+        <div class="plan-grid" id="planGrid"></div>
+
+        <div class="callout success" id="recommendationText"></div>
+
+        <div class="checklist">
+          <h3>What to do next</h3>
+          <label class="check-item"><input type="checkbox">Estimate your 2026 income carefully (slightly high is safer than low).</label>
+          <label class="check-item"><input type="checkbox">Set your tax filing date plan (April 15 is usually the easiest default).</label>
+          <label class="check-item"><input type="checkbox">Watch for your Medicaid termination notice and act within SEP window.</label>
+          <label class="check-item"><input type="checkbox">Compare final premiums on connectforhealthco.com before enrolling.</label>
+          <label class="check-item"><input type="checkbox">Check your prescriptions on Select Health formulary.</label>
+          <label class="check-item"><input type="checkbox">Enroll through Connect for Health CO (not directly through insurer).</label>
+        </div>
+
+        <p class="disclaimer">This tool is educational and uses estimate-based assumptions. It is not insurance, tax, or financial advice.</p>
+      </section>
+
+      <div class="wizard-nav">
+        <button class="btn btn-secondary" id="backBtn" type="button">Back</button>
+        <button class="btn btn-primary" id="nextBtn" type="button">Next</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const CONFIG = {
+      fplSingle: 15650,
+      benchmarkMonthly: 600,
+      cpaMonthly: 80,
+      incomeMin: 15000,
+      incomeMax: 80000,
+      earlyMonthsMarketplace: 8
+    };
+
+    const USAGE_SCENARIOS = {
+      light: {
+        id: "light",
+        label: "Light",
+        description: "Mostly preventive care with a few routine visits.",
+        details: ["2 primary care visits", "1 specialist visit", "No ER", "Mostly low-cost generic Rx"],
+        values: {
+          pcpVisits: 2,
+          specialistVisits: 1,
+          urgentVisits: 0,
+          erVisits: 0,
+          tier2RxMonths: 2,
+          tier3RxMonths: 0,
+          otherAllowedCharges: 300,
+          erAllowedCost: 2500
+        }
+      },
+      moderate: {
+        id: "moderate",
+        label: "Moderate",
+        description: "Regular care needs with occasional urgent issues.",
+        details: ["4 primary care visits", "2 specialist visits", "1 urgent care visit", "Some ongoing prescriptions"],
+        values: {
+          pcpVisits: 4,
+          specialistVisits: 2,
+          urgentVisits: 1,
+          erVisits: 0,
+          tier2RxMonths: 6,
+          tier3RxMonths: 2,
+          otherAllowedCharges: 2500,
+          erAllowedCost: 2500
+        }
+      },
+      heavy: {
+        id: "heavy",
+        label: "Heavy",
+        description: "Frequent care, specialist follow-up, and higher chance of major events.",
+        details: ["6+ primary care visits", "3+ specialist visits", "1 ER visit", "Ongoing prescriptions"],
+        values: {
+          pcpVisits: 7,
+          specialistVisits: 4,
+          urgentVisits: 2,
+          erVisits: 1,
+          tier2RxMonths: 12,
+          tier3RxMonths: 6,
+          otherAllowedCharges: 14000,
+          erAllowedCost: 2500
+        }
+      }
+    };
+
+    const FILING_OPTIONS = {
+      feb: {
+        id: "feb",
+        label: "File Early (February)",
+        description: "Fast filing, but marketplace premiums likely start sooner.",
+        monthsMedicaid: 4,
+        monthsMarketplace: 8
+      },
+      april: {
+        id: "april",
+        label: "File Around April 15",
+        description: "Recommended balance: fewer premium months without added extension complexity.",
+        monthsMedicaid: 6,
+        monthsMarketplace: 6
+      },
+      oct: {
+        id: "oct",
+        label: "File Extension (October 15)",
+        description: "Can maximize Medicaid months and savings, but adds filing/administrative complexity.",
+        monthsMedicaid: 11,
+        monthsMarketplace: 1
+      }
+    };
+
+    const PLAN_DATA = {
+      silver3400: {
+        id: "silver3400",
+        name: "Silver $3400",
+        type: "silver",
+        baseMonthlyPremium: 600,
+        deductible: 3400,
+        maxOOP: 10600,
+        pcp: 35,
+        specialist: 80,
+        urgentCare: 60,
+        coinsurance: 0.4,
+        rxDeductible: 1500,
+        tier1Rx: 0,
+        tier2Rx: 15,
+        tier3Rx: 25,
+        erCopay: 850,
+        csr: {
+          "73": { deductible: 3000, maxOOP: 7500, pcp: 30, specialist: 50 },
+          "87": { deductible: 100, maxOOP: 3300, pcp: 10, specialist: 40 },
+          "94": { deductible: 0, maxOOP: 3200, pcp: 0, specialist: 10 }
+        }
+      },
+      coSilver: {
+        id: "coSilver",
+        name: "CO Option Silver",
+        type: "silver",
+        baseMonthlyPremium: 575,
+        deductible: 4400,
+        maxOOP: 9800,
+        pcp: 0,
+        specialist: 90,
+        urgentCare: 80,
+        coinsurance: 0.4,
+        rxDeductible: 4400,
+        tier1Rx: 0,
+        tier2Rx: 20,
+        tier3Rx: 125,
+        csr: {
+          "73": { deductible: 2850, maxOOP: 8000, pcp: 0, specialist: 90 },
+          "87": { deductible: 950, maxOOP: 3350, pcp: 0, specialist: 65 },
+          "94": { deductible: 100, maxOOP: 1375, pcp: 0, specialist: 40 }
+        }
+      },
+      gold1500: {
+        id: "gold1500",
+        name: "Gold $1500",
+        type: "gold",
+        baseMonthlyPremium: 690,
+        deductible: 1500,
+        maxOOP: 9000,
+        pcp: 15,
+        specialist: 50,
+        urgentCare: 40,
+        coinsurance: 0.25,
+        rxDeductible: 600,
+        tier1Rx: 0,
+        tier2Rx: 10,
+        tier3Rx: 25
+      }
+    };
+
+    const state = {
+      step: 1,
+      income: 42000,
+      usageId: "moderate",
+      filingId: "april"
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+    const incomeSlider = $("#incomeSlider");
+    const incomeInput = $("#incomeInput");
+    const fplValue = $("#fplValue");
+    const tierBadge = $("#tierBadge");
+    const monthlyHelp = $("#monthlyHelp");
+    const benchmarkShare = $("#benchmarkShare");
+    const incomeNote = $("#incomeNote");
+
+    const usageChoices = $("#usageChoices");
+    const filingChoices = $("#filingChoices");
+    const planGrid = $("#planGrid");
+    const resultsSummary = $("#resultsSummary");
+    const recommendationText = $("#recommendationText");
+
+    const progressFill = $("#progressFill");
+    const progressLabels = $$("#progressLabels .progress-label");
+    const backBtn = $("#backBtn");
+    const nextBtn = $("#nextBtn");
+
+    function clampIncome(value) {
+      return Math.min(CONFIG.incomeMax, Math.max(CONFIG.incomeMin, value));
+    }
+
+    function parseIncomeInput(raw) {
+      const digits = String(raw).replace(/[^\d]/g, "");
+      if (!digits) return NaN;
+      return Number(digits);
+    }
+
+    function formatCurrency(value, opts = {}) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: opts.noCents ? 0 : 0
+      }).format(value);
+    }
+
+    function formatNumber(value, digits = 1) {
+      return Number(value).toFixed(digits);
+    }
+
+    function getFplPercent(income) {
+      return (income / CONFIG.fplSingle) * 100;
+    }
+
+    function getApplicablePercentage(fplPercent) {
+      if (fplPercent < 150) return 0;
+      if (fplPercent < 200) return ((fplPercent - 150) / 50) * 0.02;
+      if (fplPercent < 250) return 0.02 + ((fplPercent - 200) / 50) * 0.02;
+      if (fplPercent < 300) return 0.04 + ((fplPercent - 250) / 50) * 0.02;
+      if (fplPercent < 400) return 0.06 + ((fplPercent - 300) / 100) * 0.025;
+      return 0.085;
+    }
+
+    function getCsrTier(fplPercent) {
+      if (fplPercent < 138) return "medicaid";
+      if (fplPercent < 150) return "94";
+      if (fplPercent < 200) return "87";
+      if (fplPercent <= 250) return "73";
+      return "none";
+    }
+
+    function getAptc(income, fplPercent) {
+      const applicablePercentage = getApplicablePercentage(fplPercent);
+      const expectedAnnualContribution = income * applicablePercentage;
+      const benchmarkAnnual = CONFIG.benchmarkMonthly * 12;
+      const annualAptc = Math.max(0, benchmarkAnnual - expectedAnnualContribution);
+      return {
+        applicablePercentage,
+        expectedAnnualContribution,
+        annualAptc,
+        monthlyAptc: annualAptc / 12
+      };
+    }
+
+    function getCpaMonthly(fplPercent) {
+      return fplPercent >= 150 && fplPercent <= 300 ? CONFIG.cpaMonthly : 0;
+    }
+
+    function getSubsidyLabel(csrTier, monthlyAptc) {
+      if (csrTier === "medicaid") return { text: "Likely Medicaid", pill: "pill-medicaid" };
+      if (csrTier === "94") return { text: "94% CSR", pill: "pill-csr" };
+      if (csrTier === "87") return { text: "87% CSR", pill: "pill-csr" };
+      if (csrTier === "73") return { text: "73% CSR", pill: "pill-csr" };
+      if (monthlyAptc > 0) return { text: "No CSR (Tax Credit)", pill: "pill-none" };
+      return { text: "No Subsidy", pill: "pill-none" };
+    }
+
+    function getPlanVariant(plan, csrTier) {
+      if (plan.type !== "silver") return { ...plan, csrApplied: "none" };
+      const mappedTier = csrTier === "medicaid" ? "94" : csrTier;
+      if (!["73", "87", "94"].includes(mappedTier)) return { ...plan, csrApplied: "none" };
+      return {
+        ...plan,
+        ...plan.csr[mappedTier],
+        csrApplied: mappedTier
+      };
+    }
+
+    function estimateOutOfPocket(planVariant, usageScenario) {
+      const usage = usageScenario.values;
+      const visitCopays =
+        usage.pcpVisits * planVariant.pcp +
+        usage.specialistVisits * planVariant.specialist +
+        usage.urgentVisits * planVariant.urgentCare;
+
+      const rxCosts =
+        usage.tier2RxMonths * planVariant.tier2Rx +
+        usage.tier3RxMonths * planVariant.tier3Rx;
+
+      const erCosts = usage.erVisits * (planVariant.erCopay || usage.erAllowedCost * planVariant.coinsurance);
+
+      const deductibleSensitiveCharges =
+        usage.otherAllowedCharges + (planVariant.erCopay ? 0 : usage.erVisits * usage.erAllowedCost);
+
+      const deductibleSpend = Math.min(planVariant.deductible, deductibleSensitiveCharges);
+      const afterDeductible = Math.max(0, deductibleSensitiveCharges - planVariant.deductible);
+      const coinsuranceSpend = afterDeductible * planVariant.coinsurance;
+
+      const rawTotal = visitCopays + rxCosts + erCosts + deductibleSpend + coinsuranceSpend;
+      return Math.min(rawTotal, planVariant.maxOOP);
+    }
+
+    function runEstimate() {
+      const income = state.income;
+      const fplPercent = getFplPercent(income);
+      const csrTier = getCsrTier(fplPercent);
+      const aptc = getAptc(income, fplPercent);
+      const cpaMonthly = getCpaMonthly(fplPercent);
+      const usage = USAGE_SCENARIOS[state.usageId];
+      const filing = FILING_OPTIONS[state.filingId];
+
+      const benchmarkNetMonthly = Math.max(0, CONFIG.benchmarkMonthly - aptc.monthlyAptc - cpaMonthly);
+
+      const plans = Object.values(PLAN_DATA).map((plan) => {
+        const variant = getPlanVariant(plan, csrTier);
+        const netMonthlyPremium = Math.max(0, plan.baseMonthlyPremium - aptc.monthlyAptc - cpaMonthly);
+        const annualPremium = netMonthlyPremium * filing.monthsMarketplace;
+        const estimatedOop = estimateOutOfPocket(variant, usage);
+        const annualTotal = annualPremium + estimatedOop;
+
+        return {
+          ...plan,
+          variant,
+          netMonthlyPremium,
+          annualPremium,
+          estimatedOop,
+          annualTotal,
+          csrTierUsed: variant.csrApplied
+        };
+      }).sort((a, b) => a.annualTotal - b.annualTotal);
+
+      const timingSavingsVsEarly = (CONFIG.earlyMonthsMarketplace - filing.monthsMarketplace) * benchmarkNetMonthly;
+
+      return {
+        income,
+        fplPercent,
+        csrTier,
+        aptc,
+        cpaMonthly,
+        benchmarkNetMonthly,
+        filing,
+        usage,
+        plans,
+        timingSavingsVsEarly
+      };
+    }
+
+    function renderIncomeSummary() {
+      const estimate = runEstimate();
+      const label = getSubsidyLabel(estimate.csrTier, estimate.aptc.monthlyAptc);
+
+      fplValue.textContent = `${formatNumber(estimate.fplPercent)}%`;
+      tierBadge.className = `subsidy-pill ${label.pill}`;
+      tierBadge.textContent = label.text;
+      monthlyHelp.textContent = formatCurrency(estimate.aptc.monthlyAptc + estimate.cpaMonthly);
+      benchmarkShare.textContent = formatCurrency(estimate.benchmarkNetMonthly);
+
+      const apPct = estimate.aptc.applicablePercentage * 100;
+      if (estimate.csrTier === "medicaid") {
+        incomeNote.textContent = "Income appears in the Medicaid range (<138% FPL). Marketplace estimates below are shown for planning only in case your eligibility changes.";
+      } else {
+        incomeNote.textContent = `IRS applicable percentage estimate: ${formatNumber(apPct, 2)}% of income toward benchmark. CPA adds $80/month between 150% and 300% FPL.`;
+      }
+
+      renderFilingOptions();
+      if (state.step === 4) renderResults();
+    }
+
+    function renderUsageOptions() {
+      usageChoices.innerHTML = Object.values(USAGE_SCENARIOS).map((scenario) => {
+        const selected = state.usageId === scenario.id ? "selected" : "";
+        const detailItems = scenario.details.map((line) => `<li>${line}</li>`).join("");
+        return `
+          <button type="button" class="choice-card ${selected}" data-usage-id="${scenario.id}">
+            <h3>${scenario.label} Usage</h3>
+            <p>${scenario.description}</p>
+            <ul class="mini-list">${detailItems}</ul>
+          </button>
+        `;
+      }).join("");
+
+      $$("[data-usage-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.usageId = button.dataset.usageId;
+          renderUsageOptions();
+          clearError(2);
+          if (state.step === 4) renderResults();
+        });
+      });
+    }
+
+    function renderFilingOptions() {
+      const estimate = runEstimate();
+      filingChoices.innerHTML = Object.values(FILING_OPTIONS).map((option) => {
+        const selected = state.filingId === option.id ? "selected" : "";
+        const relativeSavings = (CONFIG.earlyMonthsMarketplace - option.monthsMarketplace) * estimate.benchmarkNetMonthly;
+        const savingsText = relativeSavings > 0 ? `About ${formatCurrency(relativeSavings)} less than early filing` : "Baseline (no extra timing savings)";
+
+        return `
+          <button type="button" class="choice-card ${selected}" data-filing-id="${option.id}">
+            <h3>${option.label}</h3>
+            <p>${option.description}</p>
+            <div class="timing-meta">
+              <div><strong>${option.monthsMedicaid}</strong> months Medicaid estimate</div>
+              <div><strong>${option.monthsMarketplace}</strong> months marketplace premiums</div>
+              <div>${savingsText}</div>
+            </div>
+            <div class="timeline" role="img" aria-label="${option.monthsMedicaid} months Medicaid and ${option.monthsMarketplace} months marketplace">
+              <div class="medicaid" style="grid-column: span ${option.monthsMedicaid};"></div>
+              <div class="market" style="grid-column: span ${option.monthsMarketplace};"></div>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      $$("[data-filing-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.filingId = button.dataset.filingId;
+          renderFilingOptions();
+          clearError(3);
+          if (state.step === 4) renderResults();
+        });
+      });
+    }
+
+    function renderResults() {
+      const estimate = runEstimate();
+      const recommended = estimate.plans[0];
+      const secondBest = estimate.plans[1];
+      const savingsVsSecond = secondBest ? secondBest.annualTotal - recommended.annualTotal : 0;
+
+      const csrLabel = estimate.csrTier === "none" ? "No CSR" : estimate.csrTier === "medicaid" ? "Medicaid-range" : `${estimate.csrTier}% CSR`;
+
+      resultsSummary.innerHTML = `
+        <div class="summary-chip"><strong>Income:</strong> ${formatCurrency(estimate.income)} (${formatNumber(estimate.fplPercent)}% FPL)</div>
+        <div class="summary-chip"><strong>Usage:</strong> ${estimate.usage.label}</div>
+        <div class="summary-chip"><strong>Filing:</strong> ${estimate.filing.label}</div>
+        <div class="summary-chip"><strong>Subsidy:</strong> ${csrLabel}, help ${formatCurrency(estimate.aptc.monthlyAptc + estimate.cpaMonthly)}/mo</div>
+      `;
+
+      planGrid.innerHTML = estimate.plans.map((plan) => {
+        const isRecommended = plan.id === recommended.id;
+        const csrText = plan.variant.csrApplied && plan.variant.csrApplied !== "none"
+          ? `${plan.variant.csrApplied}% CSR values applied`
+          : "Standard values applied";
+        return `
+          <article class="plan-card ${isRecommended ? "recommended" : ""}">
+            ${isRecommended ? '<span class="recommended-badge">Recommended</span>' : ""}
+            <h3 class="plan-name">${plan.name}</h3>
+            <div class="plan-total">${formatCurrency(plan.annualTotal)}</div>
+            <div class="plan-meta">
+              <div><strong>Annual premium:</strong> ${formatCurrency(plan.annualPremium)}</div>
+              <div><strong>Estimated care costs:</strong> ${formatCurrency(plan.estimatedOop)}</div>
+              <div><strong>Net premium/month:</strong> ${formatCurrency(plan.netMonthlyPremium)} for ${estimate.filing.monthsMarketplace} month(s)</div>
+              <div><strong>Deductible / Max OOP:</strong> ${formatCurrency(plan.variant.deductible)} / ${formatCurrency(plan.variant.maxOOP)}</div>
+              <div><strong>PCP / Specialist:</strong> ${formatCurrency(plan.variant.pcp)} / ${formatCurrency(plan.variant.specialist)}</div>
+              <div>${csrText}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      recommendationText.textContent = `${recommended.name} is estimated to cost the least for your choices, about ${formatCurrency(savingsVsSecond)} less than the next option over the year. Always confirm exact premiums before enrolling.`;
+    }
+
+    function clearError(step) {
+      const el = $(`#errorStep${step}`);
+      if (el) el.textContent = "";
+    }
+
+    function showError(step, message) {
+      const el = $(`#errorStep${step}`);
+      if (el) el.textContent = message;
+    }
+
+    function validateCurrentStep() {
+      clearError(state.step);
+
+      if (state.step === 1) {
+        if (!Number.isFinite(state.income) || state.income < CONFIG.incomeMin || state.income > CONFIG.incomeMax) {
+          showError(1, `Please enter an income between ${formatCurrency(CONFIG.incomeMin)} and ${formatCurrency(CONFIG.incomeMax)}.`);
+          return false;
+        }
+      }
+
+      if (state.step === 2) {
+        if (!USAGE_SCENARIOS[state.usageId]) {
+          showError(2, "Choose the usage card that feels closest to your expected year.");
+          return false;
+        }
+      }
+
+      if (state.step === 3) {
+        if (!FILING_OPTIONS[state.filingId]) {
+          showError(3, "Pick a filing timing option to continue.");
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function updateProgress() {
+      progressFill.style.width = `${(state.step / 4) * 100}%`;
+      progressLabels.forEach((label, index) => {
+        label.classList.toggle("active", index + 1 <= state.step);
+      });
+    }
+
+    function updateNav() {
+      backBtn.style.visibility = state.step === 1 ? "hidden" : "visible";
+
+      if (state.step === 4) {
+        nextBtn.textContent = "Start Over";
+      } else if (state.step === 3) {
+        nextBtn.textContent = "See Results";
+      } else {
+        nextBtn.textContent = "Next";
+      }
+    }
+
+    function goToStep(step) {
+      state.step = step;
+      $$(".step-panel").forEach((panel) => {
+        panel.classList.toggle("active", Number(panel.dataset.step) === state.step);
+      });
+      updateProgress();
+      updateNav();
+      if (state.step === 4) renderResults();
+    }
+
+    function syncIncomeControls(income) {
+      state.income = clampIncome(income);
+      incomeSlider.value = String(state.income);
+      incomeInput.value = String(state.income);
+      clearError(1);
+      renderIncomeSummary();
+    }
+
+    function attachIncomeHandlers() {
+      incomeSlider.addEventListener("input", (event) => {
+        syncIncomeControls(Number(event.target.value));
+      });
+
+      incomeInput.addEventListener("input", (event) => {
+        const parsed = parseIncomeInput(event.target.value);
+        if (Number.isFinite(parsed)) {
+          syncIncomeControls(parsed);
+        }
+      });
+
+      incomeInput.addEventListener("blur", () => {
+        syncIncomeControls(state.income);
+      });
+    }
+
+    function attachNavHandlers() {
+      backBtn.addEventListener("click", () => {
+        if (state.step > 1) goToStep(state.step - 1);
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if (state.step === 4) {
+          state.step = 1;
+          goToStep(1);
+          return;
+        }
+
+        if (!validateCurrentStep()) return;
+        goToStep(state.step + 1);
+      });
+    }
+
+    function init() {
+      attachIncomeHandlers();
+      attachNavHandlers();
+      renderUsageOptions();
+      renderFilingOptions();
+      syncIncomeControls(state.income);
+      goToStep(1);
+    }
+
+    init();
+  </script>
+</body>
+</html>

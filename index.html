@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Health Insurance Guide — After Medicaid</title>
+<style>
+  :root {
+    --ink: #1a2a3a;
+    --ink-soft: #4a5a6a;
+    --blue: #1a6fa0;
+    --blue-dark: #0d4f73;
+    --blue-light: #eef6fb;
+    --teal: #0d8a7d;
+    --teal-light: #e6f7f5;
+    --orange: #c46a10;
+    --orange-light: #fef5ea;
+    --gold: #b8860b;
+    --green: #1a8a3a;
+    --green-light: #e8f8ee;
+    --red: #b83030;
+    --bg: #fafcfe;
+    --card: #ffffff;
+    --border: #dce6ed;
+    --shadow: 0 2px 12px rgba(20,40,60,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+
+  body {
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  nav .inner {
+    max-width: 800px; margin: 0 auto;
+    display: flex; align-items: center; gap: 8px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  nav .inner::-webkit-scrollbar { display: none; }
+  nav a {
+    display: block; padding: 14px 12px;
+    font-size: 13px; font-weight: 500;
+    color: var(--ink-soft); text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  nav a:hover, nav a.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* ── LAYOUT ── */
+  main { max-width: 800px; margin: 0 auto; padding: 0 24px 80px; }
+
+  section { padding: 48px 0 24px; }
+  section + section { border-top: 1px solid var(--border); }
+
+  h1 { font-size: 32px; color: var(--ink); font-weight: 700; line-height: 1.2; }
+  .subtitle { color: var(--ink-soft); font-size: 15px; margin-top: 6px; }
+  .hero-meta { color: var(--ink-soft); font-size: 13px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+  h2 { font-size: 24px; color: var(--ink); font-weight: 700; margin-bottom: 16px; }
+  h3 { font-size: 18px; color: var(--blue-dark); font-weight: 600; margin: 28px 0 10px; }
+  p { margin-bottom: 12px; }
+  a { color: var(--blue); }
+
+  /* ── ALERT ── */
+  .alert-box {
+    background: var(--orange-light);
+    border: 1px solid #f0d8b0;
+    border-radius: 10px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .alert-box h3 { color: var(--orange); margin: 0 0 8px; font-size: 16px; }
+  .alert-box p { font-size: 15px; color: #5a4020; }
+
+  /* ── CARDS ── */
+  .plan-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    box-shadow: var(--shadow);
+  }
+  .plan-card h4 {
+    font-size: 17px; color: var(--blue-dark); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .plan-card .badge {
+    font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .badge-silver { background: #e0e8ef; color: #3a5060; }
+  .badge-gold { background: #f5ecd0; color: #7a6520; }
+  .plan-card p { font-size: 15px; color: var(--ink-soft); margin-bottom: 8px; }
+  .plan-card .vs { font-size: 13px; color: #888; font-style: italic; margin-top: 4px; }
+  .plan-card .link { font-size: 14px; margin-top: 8px; }
+
+  .plan-card .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px; margin: 12px 0;
+  }
+  .stat { background: var(--blue-light); border-radius: 6px; padding: 8px 12px; text-align: center; }
+  .stat .val { font-size: 20px; font-weight: 700; color: var(--blue-dark); }
+  .stat .lbl { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 8px; padding: 16px 20px; margin: 16px 0; font-size: 15px;
+  }
+  .callout-blue { background: var(--blue-light); border-left: 4px solid var(--blue); color: #1a3a5a; }
+  .callout-green { background: var(--green-light); border-left: 4px solid var(--green); color: #1a4a2a; }
+  .callout-teal { background: var(--teal-light); border-left: 4px solid var(--teal); color: #0a4a42; }
+  .callout-orange { background: var(--orange-light); border-left: 4px solid var(--orange); color: #5a3a10; }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th { background: #2a3d4f; color: #fff; text-align: left; padding: 10px 14px; font-weight: 600; font-size: 13px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f7f9fb; }
+  .highlight td { background: var(--green-light) !important; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+
+  /* ── KEY TERMS ── */
+  .term-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0;
+  }
+  .term {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .term strong { color: var(--blue-dark); font-size: 14px; display: block; margin-bottom: 2px; }
+  .term span { font-size: 13px; color: var(--ink-soft); }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0;
+  }
+  .timeline-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .timeline-card.recommended { border-color: var(--green); border-width: 2px; }
+  .timeline-card h4 { font-size: 15px; color: var(--ink); margin-bottom: 8px; }
+  .timeline-card .big { font-size: 28px; font-weight: 700; color: var(--blue-dark); }
+  .timeline-card .label { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+  .timeline-card p { font-size: 13px; color: var(--ink-soft); margin-top: 8px; }
+  .rec-badge { display: inline-block; background: var(--green); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+
+  /* ── ACTION ITEMS ── */
+  .priority-label {
+    display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 10px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 12px;
+  }
+  .priority-high { background: #fde2e2; color: var(--red); }
+  .priority-medium { background: #fef0d8; color: var(--orange); }
+  .priority-nice { background: var(--teal-light); color: var(--teal); }
+
+  ol { margin: 0 0 24px 20px; }
+  li { margin-bottom: 10px; font-size: 15px; }
+  li strong { color: var(--ink); }
+
+  /* ── TOOLS ── */
+  .tool-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .tool-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; box-shadow: var(--shadow);
+    text-decoration: none; color: var(--ink); transition: all 0.15s;
+  }
+  .tool-card:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(20,40,60,0.12); }
+  .tool-card .icon { font-size: 28px; margin-bottom: 8px; }
+  .tool-card h4 { font-size: 16px; color: var(--blue-dark); margin-bottom: 4px; }
+  .tool-card p { font-size: 13px; color: var(--ink-soft); margin: 0; }
+
+  /* ── RESOURCES ── */
+  .resource-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0;
+  }
+  .resource {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .resource strong { display: block; font-size: 14px; color: var(--ink); margin-bottom: 2px; }
+  .resource span { font-size: 13px; color: var(--ink-soft); }
+  .resource a { font-size: 13px; }
+
+  /* ── FOOTER ── */
+  footer {
+    max-width: 800px; margin: 0 auto; padding: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: #888; font-style: italic; line-height: 1.5;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    h1 { font-size: 24px; }
+    h2 { font-size: 20px; }
+    .term-grid, .tool-cards, .resource-grid { grid-template-columns: 1fr; }
+    .timeline { grid-template-columns: 1fr; }
+    .plan-card .stats { grid-template-columns: repeat(2, 1fr); }
+    nav a { font-size: 12px; padding: 12px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="#start">Start Here</a>
+    <a href="#plans">Your Plans</a>
+    <a href="#income">Income</a>
+    <a href="#csr">CSR Magic</a>
+    <a href="#timing">Timing</a>
+    <a href="#actions">Action Items</a>
+    <a href="#tools">Tools</a>
+    <a href="#resources">Resources</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: START HERE                         -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="start">
+  <h1>Your Guide to Health Insurance After Medicaid</h1>
+  <p class="subtitle">Everything you need to pick the right plan, at the right price, at the right time.</p>
+
+  <div class="alert-box">
+    <h3>The plan you saw on Connect for Health Colorado has been discontinued.</h3>
+    <p>The Silver $1500 plan you browsed in January — with the $1,500 deductible, 50% coinsurance, and $8,000 max out-of-pocket — was removed from SelectHealth's 2026 lineup. It no longer exists on the marketplace.</p>
+    <p>The good news: the three replacement options below all use the <strong>same SelectHealth network and same doctors</strong>. Two of them can actually be <em>much better</em> than the old plan if your income qualifies for cost-sharing reductions. This guide walks through everything.</p>
+  </div>
+
+  <div class="callout callout-blue">
+    <strong>There are really only three decisions to make,</strong> and they build on each other in order. Get the first one right and the rest fall into place:
+    <strong>1)</strong> What's your income? <strong>2)</strong> How much care do you expect to use? <strong>3)</strong> When should you file your tax return?
+  </div>
+
+  <h3>Key Terms in Plain English</h3>
+  <div class="term-grid">
+    <div class="term"><strong>Deductible</strong><span>How much you pay before insurance kicks in. Copay visits and preventive care are exempt.</span></div>
+    <div class="term"><strong>Copay</strong><span>A fixed amount per visit (e.g. $35 for a doctor visit). Paid regardless of deductible.</span></div>
+    <div class="term"><strong>Coinsurance</strong><span>After meeting the deductible, you split costs. "40%" means you pay 40%, insurance pays 60%.</span></div>
+    <div class="term"><strong>Max Out-of-Pocket</strong><span>Your ceiling for the year. After this, insurance covers 100%. Your financial safety net.</span></div>
+    <div class="term"><strong>CSR</strong><span>Cost-Sharing Reduction — lowers deductible, copays, and max OOP. Only on Silver plans. Income-dependent.</span></div>
+    <div class="term"><strong>APTC</strong><span>Federal tax credit that lowers your monthly premium. Reconciled at tax time — accuracy matters.</span></div>
+    <div class="term"><strong>CPA</strong><span>Colorado Premium Assistance — $80/month from the state. NOT a tax credit. Never repaid.</span></div>
+    <div class="term"><strong>EPO</strong><span>Exclusive Provider Organization — must use in-network doctors except for emergencies.</span></div>
+  </div>
+
+  <p class="hero-meta">Prepared February 2026 for a 40-year-old in Boulder County, Colorado, transitioning from Health First Colorado (Medicaid) to marketplace coverage through Connect for Health Colorado.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: YOUR THREE PLAN OPTIONS            -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="plans">
+  <h2>Your Three Plan Options</h2>
+  <p>All three are from SelectHealth, using the same Value provider network. Your PCP is confirmed in-network. Each has a different trade-off between monthly premium, deductible, and what you pay at the doctor.</p>
+
+  <div class="plan-card">
+    <h4><span class="badge badge-silver">Silver</span> Silver $3400</h4>
+    <p><strong>Best if your income qualifies for cost-sharing help.</strong> On paper the deductible is $3,400 — higher than the old plan. But if your income is under ~$39K, you automatically get Cost-Sharing Reductions (CSR) that transform this plan: the deductible can drop to as low as <strong>$0</strong>, the max out-of-pocket to <strong>$3,200</strong>, and PCP visits to <strong>$0</strong>. This is also the lowest-premium Silver option, keeping more money in your pocket each month.</p>
+    <div class="stats">
+      <div class="stat"><div class="val">$3,400</div><div class="lbl">Deductible</div></div>
+      <div class="stat"><div class="val">$10,600</div><div class="lbl">Max OOP</div></div>
+      <div class="stat"><div class="val">$35</div><div class="lbl">PCP Visit</div></div>
+      <div class="stat"><div class="val">40%</div><div class="lbl">Coinsurance</div></div>
+    </div>
+    <p class="vs">vs. old Silver $1500: higher base deductible, but dramatically better with CSR; 40% coinsurance vs. 50%</p>
+    <p class="link"><a href="https://www.healthsherpa.com/states/colorado-aca/55584CO0030017-select-health-value-silver-3200-medical-deductible" target="_blank">View full plan details on HealthSherpa &rarr;</a></p>
+  </div>
+
+  <div class="plan-card">
+    <h4><span class="badge badge-silver">Silver</span> CO Option Silver</h4>
+    <p><strong>Best if you see your doctor regularly.</strong> Colorado's standardized plan design. The standout feature: <strong>PCP visits are $0 with no deductible</strong> — you can see your doctor without paying anything, even before meeting the deductible. Also CSR-eligible: with lower income the deductible drops from $4,400 to as low as <strong>$100</strong> and the max out-of-pocket to just <strong>$1,375</strong>. Specialists are $90 (vs. $80 on Silver $3400), so you trade slightly higher specialist costs for free primary care.</p>
+    <div class="stats">
+      <div class="stat"><div class="val">$4,400</div><div class="lbl">Deductible</div></div>
+      <div class="stat"><div class="val">$9,800</div><div class="lbl">Max OOP</div></div>
+      <div class="stat"><div class="val">$0</div><div class="lbl">PCP Visit</div></div>
+      <div class="stat"><div class="val">40%</div><div class="lbl">Coinsurance</div></div>
+    </div>
+    <p class="vs">vs. old Silver $1500: higher base deductible, but $0 PCP visits and the strongest CSR reductions at lower incomes</p>
+    <p class="link"><a href="https://www.healthsherpa.com/states/colorado-aca/55584CO0030002-select-health-value-colorado-option-silver" target="_blank">View full plan details on HealthSherpa &rarr;</a></p>
+  </div>
+
+  <div class="plan-card">
+    <h4><span class="badge badge-gold">Gold</span> Gold $1500</h4>
+    <p><strong>Closest to the old plan — with better coinsurance.</strong> Same $1,500 deductible as the discontinued Silver $1500, but coinsurance drops from 50% to <strong>25%</strong> — meaning you pay half as much of each bill after the deductible. PCP visits are just $15, specialists $50, and generic prescriptions are still $0. The trade-off: Gold plans are <strong>not eligible for CSR</strong>, so these numbers don't improve with lower income, and the monthly premium is the highest of the three. Best if your income is above the CSR threshold (~$39K+) or you want the simplest, most predictable cost-sharing.</p>
+    <div class="stats">
+      <div class="stat"><div class="val">$1,500</div><div class="lbl">Deductible</div></div>
+      <div class="stat"><div class="val">$9,000</div><div class="lbl">Max OOP</div></div>
+      <div class="stat"><div class="val">$15</div><div class="lbl">PCP Visit</div></div>
+      <div class="stat"><div class="val">25%</div><div class="lbl">Coinsurance</div></div>
+    </div>
+    <p class="vs">vs. old Silver $1500: same deductible, 25% coinsurance instead of 50%, $9K max OOP instead of $8K</p>
+    <p class="link"><a href="https://www.healthsherpa.com/states/colorado-aca/55584CO0030029-select-health-value-gold-1500-medical-deductible" target="_blank">View full plan details on HealthSherpa &rarr;</a></p>
+  </div>
+
+  <h3>Full Plan Comparison</h3>
+  <table>
+    <tr><th>Feature</th><th>Silver $3400</th><th>CO Option Silver</th><th>Gold $1500</th></tr>
+    <tr><td>Deductible</td><td>$3,400</td><td>$4,400</td><td>$1,500</td></tr>
+    <tr><td>Max OOP</td><td>$10,600</td><td>$9,800</td><td>$9,000</td></tr>
+    <tr><td>Coinsurance</td><td>40%</td><td>40%</td><td>25%</td></tr>
+    <tr><td>PCP Visit</td><td>$35</td><td style="color:var(--green); font-weight:700;">$0</td><td>$15</td></tr>
+    <tr><td>Specialist</td><td>$80</td><td>$90</td><td>$50</td></tr>
+    <tr><td>Urgent Care</td><td>$60</td><td>$80</td><td>$40</td></tr>
+    <tr><td>ER</td><td>$850 + ded.</td><td>40% + ded.</td><td>25% + ded.</td></tr>
+    <tr><td>Virtual Visits</td><td>$0</td><td>$0</td><td>$0</td></tr>
+    <tr><td>Generic Rx</td><td>$0</td><td>$0</td><td>$0</td></tr>
+    <tr><td>Tier 2 Rx</td><td>$15</td><td>$20</td><td>$10</td></tr>
+    <tr><td>Rx Deductible</td><td>$1,500</td><td>Combined</td><td>$600</td></tr>
+    <tr><td>CSR Eligible?</td><td style="color:var(--green); font-weight:700;">Yes</td><td style="color:var(--green); font-weight:700;">Yes</td><td style="color:var(--red);">No</td></tr>
+  </table>
+  <p style="font-size:13px; color:#888; font-style:italic;">Data verified against SelectHealth "Colorado Individual Plans and Benefits | 2026" and "Colorado Option Individual Plans and Benefits | 2026" official documents.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: INCOME                              -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="income">
+  <h2>Decision 1: What's Your Income?</h2>
+  <p>Your estimated 2026 income is the single most important number. It determines three things: how much premium help you get (APTC), whether Silver plans get CSR benefits, and whether you qualify for Colorado's $80/month Premium Assistance (CPA).</p>
+
+  <table>
+    <tr><th>Income</th><th>% FPL</th><th>What Happens</th><th>Est. Premium</th></tr>
+    <tr><td>&lt; $21,597</td><td>&lt;138%</td><td>Likely still Medicaid-eligible</td><td>$0</td></tr>
+    <tr class="highlight"><td>$23K–$31K</td><td>150–200%</td><td>87–94% CSR + APTC + CPA. Silver acts like Platinum.</td><td>~$1–$50/mo</td></tr>
+    <tr><td>$31K–$39K</td><td>200–250%</td><td>73% CSR + APTC + CPA. Moderate Silver improvement.</td><td>~$50–$150/mo</td></tr>
+    <tr><td>$39K–$63K</td><td>250–400%</td><td>No CSR. APTC + CPA only. Compare Silver vs Gold.</td><td>~$150–$400/mo</td></tr>
+    <tr><td>&gt; $62,600</td><td>&gt;400%</td><td>Subsidy cliff — no federal help, no CPA.</td><td>~$500–$700/mo</td></tr>
+  </table>
+  <p style="font-size:13px; color:#888; font-style:italic;">Premium estimates for age 40, Boulder County, ~$600/month benchmark. 2025 Federal Poverty Level = $15,650. Use the <a href="#tools">calculator</a> or connectforhealthco.com for exact numbers.</p>
+
+  <h3>The 2026 Landscape — What Changed</h3>
+  <p><strong>Federal enhanced subsidies expired December 31, 2025.</strong> From 2021 through 2025, Congress provided extra premium help that kept marketplace costs low. These were not renewed. Average net premiums roughly doubled for subsidized enrollees.</p>
+  <p><strong>Colorado stepped in — partially.</strong> Colorado created Premium Assistance (CPA): $80/month applied automatically. It's not a tax credit — it never has to be repaid even if your income changes. It helps, but doesn't fully replace what expired.</p>
+
+  <div class="callout callout-orange">
+    <strong>Accuracy matters more than ever.</strong> Starting in 2026, the APTC repayment cap is removed. If you receive more premium tax credit than you're entitled to (because your income ends up higher than estimated), you must repay the <strong>full</strong> excess. Overestimating income is safer than underestimating.
+  </div>
+
+  <h3>The Decision Tree</h3>
+  <table>
+    <tr><th>If your income is...</th><th>Then the best plan is likely...</th><th>Because...</th></tr>
+    <tr><td>Under $39K</td><td style="font-weight:700;">Silver (either)</td><td>CSR upgrades the plan for free — Gold can't compete</td></tr>
+    <tr><td>$39K–$63K</td><td style="font-weight:700;">Compare Silver vs. Gold</td><td>No CSR; Gold's lower deductible may offset its higher premium</td></tr>
+    <tr><td>Over $63K</td><td style="font-weight:700;">Gold (or Bronze)</td><td>No subsidies — pick based on expected healthcare usage</td></tr>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: CSR MAGIC                           -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="csr">
+  <h2>How CSR Transforms Silver Plans</h2>
+  <p>This is the single biggest thing most people miss. CSR (Cost-Sharing Reduction) is a free upgrade that <strong>only applies to Silver plans</strong> purchased through Connect for Health Colorado. It doesn't change your premium — it changes the plan itself: lower deductible, lower copays, lower max out-of-pocket.</p>
+
+  <div class="callout callout-green">
+    <strong>Why Silver often beats Gold:</strong> At first glance, Gold looks better (lower deductible, lower coinsurance). But with CSR, a Silver plan can have a <strong>$0 deductible</strong> and <strong>$3,200 max OOP</strong> — far better than Gold's $1,500 deductible and $9,000 max OOP — while also costing less per month.
+  </div>
+
+  <h3>Silver $3400 with CSR</h3>
+  <table>
+    <tr><th>CSR Tier</th><th>Income Range</th><th>Deductible</th><th>Max OOP</th><th>PCP</th><th>Specialist</th></tr>
+    <tr><td>Standard</td><td>&gt; $39K</td><td>$3,400</td><td>$10,600</td><td>$35</td><td>$80</td></tr>
+    <tr><td>73%</td><td>$31K–$39K</td><td>$3,000</td><td>$7,500</td><td>$30</td><td>$50</td></tr>
+    <tr><td>87%</td><td>$23K–$31K</td><td>$100</td><td>$3,300</td><td>$10</td><td>$40</td></tr>
+    <tr class="highlight"><td>94%</td><td>$21K–$23K</td><td style="color:var(--green); font-weight:700;">$0</td><td>$3,200</td><td style="color:var(--green); font-weight:700;">$0</td><td>$10</td></tr>
+  </table>
+
+  <h3>CO Option Silver with CSR</h3>
+  <table>
+    <tr><th>CSR Tier</th><th>Income Range</th><th>Deductible</th><th>Max OOP</th><th>PCP</th><th>Specialist</th></tr>
+    <tr><td>Standard</td><td>&gt; $39K</td><td>$4,400</td><td>$9,800</td><td>$0</td><td>$90</td></tr>
+    <tr><td>73%</td><td>$31K–$39K</td><td>$2,850</td><td>$8,000</td><td>$0</td><td>$90</td></tr>
+    <tr><td>87%</td><td>$23K–$31K</td><td>$950</td><td>$3,350</td><td>$0</td><td>$65</td></tr>
+    <tr class="highlight"><td>94%</td><td>$21K–$23K</td><td>$100</td><td style="color:var(--green); font-weight:700;">$1,375</td><td style="color:var(--green); font-weight:700;">$0</td><td>$40</td></tr>
+  </table>
+
+  <p>Notice: Gold $1500 stays at $1,500 deductible / $9,000 max OOP / $15 PCP <strong>at every income level</strong>. It never improves. That's why income is the gate — if you qualify for CSR, Silver is almost always better.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TIMING                              -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="timing">
+  <h2>Decision 3: When to File Your Tax Return</h2>
+  <p>The lever most people don't realize they have. Filing your 2025 tax return triggers the data match that starts Medicaid redetermination. Delay the filing = more months of free coverage before premiums begin. It doesn't change which plan is best — it changes <strong>how many months you pay for it</strong>.</p>
+
+  <div class="timeline">
+    <div class="timeline-card">
+      <h4>File Early (Feb)</h4>
+      <div class="big">~4</div>
+      <div class="label">months free Medicaid</div>
+      <p>Medicaid ends ~May. 8 months of premiums. Simplest, but most expensive.</p>
+    </div>
+    <div class="timeline-card recommended">
+      <span class="rec-badge">Recommended</span>
+      <h4>File April 15</h4>
+      <div class="big">~6</div>
+      <div class="label">months free Medicaid</div>
+      <p>Medicaid through ~July. 6 months of premiums. Balances savings with simplicity.</p>
+    </div>
+    <div class="timeline-card">
+      <h4>File Extension (Oct)</h4>
+      <div class="big">~11</div>
+      <div class="label">months free Medicaid</div>
+      <p>Medicaid through ~Dec. Only ~1 month of premiums. Saves most but adds complexity.</p>
+    </div>
+  </div>
+
+  <h3>What This Means in Dollars</h3>
+  <p>If your net monthly premium is around $235 (at ~$42K income), every month on Medicaid instead of marketplace saves $235. Filing April 15 instead of February saves roughly <strong>$470</strong>. Filing on extension could save over <strong>$1,650</strong> — but if you owe any tax, payment is still due April 15 even with an extension.</p>
+
+  <div class="callout callout-teal">
+    <strong>Recommendation:</strong> File around April 15. It keeps Medicaid through roughly June/July, avoids the complexity of an extension, and gives a clean Special Enrollment Period window in mid-summer. Start shopping plans at connectforhealthco.com <em>before</em> filing, so you're ready to enroll the moment the Medicaid termination notice arrives.
+  </div>
+
+  <h3>Important Caveats</h3>
+  <p><strong>Filing an extension is not the same as not filing.</strong> The extension only extends the filing deadline, not the payment deadline. Medicaid may also redetermine eligibility on its own through periodic data matches — delaying the filing doesn't guarantee continuation, it just makes it more likely.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: ACTION ITEMS                        -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="actions">
+  <h2>What to Do Next</h2>
+
+  <span class="priority-label priority-high">High Priority</span>
+  <ol>
+    <li><strong>Estimate your 2026 income as precisely as possible.</strong> This determines your CSR tier, premium subsidy amount, and CPA eligibility. If income is variable, estimate conservatively — overestimating is safer than underestimating because the repayment cap is gone.</li>
+    <li><strong>Decide when to file your 2025 tax return.</strong> April 15 is the recommended sweet spot. Start shopping plans online before filing so you're ready to enroll quickly.</li>
+    <li><strong>Act immediately when the Medicaid termination notice arrives.</strong> You'll have a 60–90 day Special Enrollment Period. Set calendar reminders at 30 and 60 days. Missing the SEP means waiting until November 2026 open enrollment.</li>
+    <li><strong>Enroll through Connect for Health Colorado — not directly with SelectHealth.</strong> You must go through the marketplace to receive APTC, CSR, or CPA. Call <strong>855-752-6749</strong> or visit <a href="https://connectforhealthco.com" target="_blank">connectforhealthco.com</a>.</li>
+  </ol>
+
+  <span class="priority-label priority-medium">Medium Priority</span>
+  <ol start="5">
+    <li><strong>Look up prescriptions on the SelectHealth formulary.</strong> Visit <a href="https://selecthealth.org/pharmacy" target="_blank">selecthealth.org/pharmacy</a> and verify each medication is Tier 1 (generic = $0). If any are Tier 2+, factor copay differences between plans.</li>
+    <li><strong>Compare exact premiums using the Plan Finder.</strong> At <a href="https://planfinder.connectforhealthco.com/" target="_blank">connectforhealthco.com Plan Finder</a>, enter your zip code, age 40, non-tobacco, and income for exact monthly premiums after all credits.</li>
+    <li><strong>Understand the EPO limitation.</strong> All three plans are EPO — no out-of-network coverage except true emergencies. If you travel frequently, only emergency situations are covered.</li>
+  </ol>
+
+  <span class="priority-label priority-nice">Good to Know</span>
+  <ol start="8">
+    <li><strong>Take advantage of $0 virtual visits.</strong> All SelectHealth plans include free virtual visits for primary care, urgent care, and mental health.</li>
+    <li><strong>Look into wellness rewards.</strong> SelectHealth offers up to $580/year in rewards for completing checkups, screenings, and health classes.</li>
+  </ol>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: TOOLS                               -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="tools">
+  <h2>Interactive Tools</h2>
+  <p>These tools let you plug in your specific numbers and see personalized results. They're included alongside this guide.</p>
+
+  <div class="tool-cards">
+    <a class="tool-card" href="wizard.html">
+      <div class="icon">&#x1F9ED;</div>
+      <h4>Decision Wizard</h4>
+      <p>Walk through income, usage, and timing step by step. Get a personalized plan recommendation with cost estimates.</p>
+    </a>
+    <a class="tool-card" href="health plan calculator.xlsx">
+      <div class="icon">&#x1F4CA;</div>
+      <h4>Plan Calculator (Excel)</h4>
+      <p>Interactive spreadsheet with 4 tabs. Change the yellow cells — premiums, copays, and timing savings all recalculate.</p>
+    </a>
+  </div>
+
+  <div class="callout callout-blue">
+    <strong>Tip:</strong> Start with the Decision Wizard for a quick recommendation, then use the Calculator spreadsheet to explore different income and usage scenarios in more detail.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION: RESOURCES                           -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="resources">
+  <h2>Resources &amp; Contacts</h2>
+
+  <div class="resource-grid">
+    <div class="resource">
+      <strong>Connect for Health Colorado</strong>
+      <span>Marketplace enrollment &amp; help</span><br>
+      <a href="https://connectforhealthco.com" target="_blank">connectforhealthco.com</a> · 855-752-6749
+    </div>
+    <div class="resource">
+      <strong>Boulder County Coverage Guides</strong>
+      <span>Free in-person enrollment help</span><br>
+      <a href="https://boco.org/healthcoverage" target="_blank">boco.org/healthcoverage</a> · 303-441-1268
+    </div>
+    <div class="resource">
+      <strong>SelectHealth Member Services</strong>
+      <span>Plan questions &amp; provider search</span><br>
+      <a href="https://selecthealth.org/find-care" target="_blank">selecthealth.org/find-care</a> · 800-538-5038
+    </div>
+    <div class="resource">
+      <strong>SelectHealth Drug Formulary</strong>
+      <span>Check if your Rx is covered</span><br>
+      <a href="https://selecthealth.org/pharmacy" target="_blank">selecthealth.org/pharmacy</a>
+    </div>
+    <div class="resource">
+      <strong>Plan Finder Tool</strong>
+      <span>Compare plans with your income</span><br>
+      <a href="https://planfinder.connectforhealthco.com/" target="_blank">planfinder.connectforhealthco.com</a>
+    </div>
+    <div class="resource">
+      <strong>SelectHealth Individual Sales</strong>
+      <span>Talk to an agent</span><br>
+      <a href="https://selecthealth.org/plans/individual-and-family/colorado-aca-plans" target="_blank">selecthealth.org</a> · 855-442-0220
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Prepared February 2026 using verified SelectHealth "Colorado Individual Plans and Benefits | 2026" and "Colorado Option Individual Plans and Benefits | 2026" plan documents, and 2026 IRS applicable percentages (Rev. Proc. 2025-25). Premium estimates use a ~$600/month benchmark for Boulder County, age 40, non-tobacco. 2025 FPL = $15,650. All estimates should be verified with Connect for Health Colorado before enrollment. This is not professional insurance or financial advice.
+</footer>
+
+<script>
+// Highlight active nav link on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
